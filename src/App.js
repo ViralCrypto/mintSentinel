@@ -307,7 +307,7 @@ function App() {
                 textAlign: "center",
               }}
             >
-              <StyledButton
+              {/* <StyledButton
                 onClick={(e) => {
                   window.open("/config/roadmap.pdf", "_blank");
                 }}
@@ -326,7 +326,7 @@ function App() {
                 }}
               >
                 {CONFIG.MARKETPLACE}
-              </StyledButton>
+              </StyledButton> */}
             </span>
             <s.SpacerSmall />
             {Number(data.minted0) >= CONFIG.MAX_SUPPLY ? (
@@ -358,7 +358,7 @@ function App() {
                         color: "var(--accent-text)",
                       }}
                     >
-                      Connect to the {CONFIG.NETWORK.NAME} network
+                      Connect to {CONFIG.NETWORK.NAME} for Minted Supply and<br/> obtain The Sentinel
                     </s.TextDescription>
                     <s.SpacerSmall />
                     <StyledButton
