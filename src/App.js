@@ -66,7 +66,7 @@ export const ResponsiveWrapper = styled.div`
 `;
 
 export const StyledLogo = styled.img`
-  width: 200px;
+  width: 240px;
   @media (min-width: 767px) {
     width: 300px;
   }
@@ -220,7 +220,29 @@ function App() {
         <a href={CONFIG.MARKETPLACE_LINK}>
           <StyledLogo alt={"logo"} src={"/config/images/logo.png"} />
         </a>
-        <s.SpacerSmall />
+        <s.SpacerMedium />
+        <s.Container jc={"center"} ai={"center"} style={{ width: "70%", maxWidth: "700px" }}>
+          <s.TextDescription
+            style={{
+              textAlign: "center",
+              color: "var(--primary-text)",
+              fontSize: "20px"
+            }}
+          >
+            The Sentinel gives passage into Viral Crypto. 
+          </s.TextDescription>
+          <s.SpacerSmall />
+          <s.TextDescription
+            style={{
+              textAlign: "center",
+              color: "var(--primary-text)",
+              fontSize: "20px"
+            }}
+          >
+            Minting and possessing a Sentinel rewards you with VC tokens, gives you access to create a profile on the VC platform, and also reserves an allocation to mint a unique generative avatar that grants benefits on Viral Crypto.
+          </s.TextDescription>
+          <s.SpacerSmall />
+        </s.Container>
         <ResponsiveWrapper flex={1} style={{ padding: 12 }} test>
         <s.Container
             flex={2}
@@ -263,6 +285,11 @@ function App() {
                 <s.TextDescription
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
+                  Limit: 1 per wallet
+                </s.TextDescription>
+                <s.TextDescription
+                  style={{ textAlign: "center", color: "var(--accent-text)" }}
+                >
                   Excluding gas fees.
                 </s.TextDescription>
             <s.TextDescription
@@ -272,7 +299,7 @@ function App() {
               }}
             >
               <StyledLink target={"_blank"} href={CONFIG.SCAN_LINK}>
-                {truncate(CONFIG.CONTRACT_ADDRESS, 15)}
+                {truncate(CONFIG.CONTRACT_ADDRESS, 24)}
               </StyledLink>
             </s.TextDescription>
             <span
@@ -420,7 +447,8 @@ function App() {
           </s.Container>
          
         </ResponsiveWrapper>
-        <s.SpacerMedium />
+        <s.SpacerLarge />
+        <s.SpacerLarge />
         <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>
           <s.TextDescription
             style={{
