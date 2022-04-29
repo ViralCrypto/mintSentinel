@@ -29,6 +29,7 @@ export const fetchData = () => {
         .getState()
         .blockchain.smartContract.methods.minted()
         .call();
+      console.log("minted0", minted0);
       // let cost = await store
       //   .getState()
       //   .blockchain.smartContract.methods.cost()

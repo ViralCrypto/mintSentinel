@@ -51,6 +51,7 @@ export const connect = () => {
     const { ethereum } = window;
     const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
     if (metamaskIsInstalled) {
+      console.log("ethereum", ethereum);
       Web3EthContract.setProvider(ethereum);
       let web3 = new Web3(ethereum);
       try {

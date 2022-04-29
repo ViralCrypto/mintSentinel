@@ -4,6 +4,12 @@ import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
 import styled from "styled-components";
+import Web3EthContract from "web3-eth-contract";
+
+const ethereum =
+  "https://speedy-nodes-nyc.moralis.io/bcb3bd54ede621d8675a4148/eth/mainnet";
+
+Web3EthContract.setProvider(ethereum);
 
 const truncate = (input, len) =>
   input.length > len ? `${input.substring(0, len)}...` : input;
@@ -106,7 +112,10 @@ function App() {
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
   const [claimingNft, setClaimingNft] = useState(false);
-  const [feedback, setFeedback] = useState(`Click Mint below to obtain your Sentinel NFT.`);
+  const [minted, setMinted] = useState(0);
+  const [feedback, setFeedback] = useState(
+    `Click Mint below to obtain your Sentinel NFT.`
+  );
   const [mintAmount, setMintAmount] = useState(1);
   const [CONFIG, SET_CONFIG] = useState({
     CONTRACT_ADDRESS: "",
@@ -129,9 +138,9 @@ function App() {
 
   const claimNFTs = (nftID) => {
     let cost;
-    if(nftID == 0){
+    if (nftID == 0) {
       cost = CONFIG.WEI_COST1;
-    }    
+    }
     let gasLimit = CONFIG.GAS_LIMIT;
     let totalCostWei = String(cost);
     let totalGasLimit = String(gasLimit);
@@ -161,8 +170,6 @@ function App() {
         dispatch(fetchData(blockchain.account));
         setMintAmount(1);
       });
-      
-      
   };
 
   // const decrementMintAmount = () => {
@@ -198,8 +205,31 @@ function App() {
     SET_CONFIG(config);
   };
 
+  const getMinted = async () => {
+    const abiResponse = await fetch("/config/abi.json", {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const abi = await abiResponse.json();
+
+    const configResponse = await fetch("/config/config.json", {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const CONFIG = await configResponse.json();
+
+    const SmartContractObj = new Web3EthContract(abi, CONFIG.CONTRACT_ADDRESS);
+
+    setMinted(Number(await SmartContractObj.methods.minted().call()));
+  };
+
   useEffect(() => {
     getConfig();
+    getMinted();
   }, []);
 
   useEffect(() => {
@@ -221,30 +251,37 @@ function App() {
           <StyledLogo alt={"logo"} src={"/config/images/logo.png"} />
         </a>
         <s.SpacerMedium />
-        <s.Container jc={"center"} ai={"center"} style={{ width: "70%", maxWidth: "700px" }}>
+        <s.Container
+          jc={"center"}
+          ai={"center"}
+          style={{ width: "70%", maxWidth: "700px" }}
+        >
           <s.TextDescription
             style={{
               textAlign: "center",
               color: "var(--primary-text)",
-              fontSize: "20px"
+              fontSize: "20px",
             }}
           >
-            The Sentinel gives passage into Viral Crypto. 
+            The Sentinel gives passage into Viral Crypto.
           </s.TextDescription>
           <s.SpacerSmall />
           <s.TextDescription
             style={{
               textAlign: "center",
               color: "var(--primary-text)",
-              fontSize: "20px"
+              fontSize: "20px",
             }}
           >
-            Minting and possessing a Sentinel rewards you with VC tokens, gives you access to create a profile on the VC platform, and also reserves an allocation to mint a unique generative avatar that grants benefits on Viral Crypto.
+            Minting and possessing a Sentinel rewards you with VC tokens, gives
+            you access to create a profile on the VC platform, and also reserves
+            an allocation to mint a unique generative avatar that grants
+            benefits on Viral Crypto.
           </s.TextDescription>
           <s.SpacerSmall />
         </s.Container>
         <ResponsiveWrapper flex={1} style={{ padding: 12 }} test>
-        <s.Container
+          <s.Container
             flex={2}
             jc={"center"}
             ai={"center"}
@@ -258,14 +295,21 @@ function App() {
             }}
           >
             <s.Container flex={1} jc={"center"} ai={"center"}>
-              <StyledImg alt={"example"} src={"/config/images/thesentinel.gif"} />
+              <StyledImg
+                alt={"example"}
+                src={"/config/images/thesentinel.gif"}
+              />
             </s.Container>
             <s.SpacerSmall />
             <s.TextTitle
-                  style={{ textAlign: "center", fontSize: 50, color: "var(--accent-text)" }}
-                >
-                  {CONFIG.SYMBOL1}
-                </s.TextTitle>
+              style={{
+                textAlign: "center",
+                fontSize: 50,
+                color: "var(--accent-text)",
+              }}
+            >
+              {CONFIG.SYMBOL1}
+            </s.TextTitle>
             <s.TextTitle
               style={{
                 textAlign: "center",
@@ -274,24 +318,23 @@ function App() {
                 color: "var(--accent-text)",
               }}
             >
-              {data.minted0} / {CONFIG.MAX_SUPPLY1}
+              {data.minted0 ? data.minted0 : minted} / {CONFIG.MAX_SUPPLY1}
             </s.TextTitle>
             <s.TextTitle
-                  style={{ textAlign: "center", color: "var(--accent-text)" }}
-                >
-                  {CONFIG.DISPLAY_COST1}{" "}
-                  {CONFIG.NETWORK.SYMBOL}{" "}Each
-                </s.TextTitle>
-                <s.TextDescription
-                  style={{ textAlign: "center", color: "var(--accent-text)" }}
-                >
-                  Limit: 1 per wallet
-                </s.TextDescription>
-                <s.TextDescription
-                  style={{ textAlign: "center", color: "var(--accent-text)" }}
-                >
-                  Excluding gas fees.
-                </s.TextDescription>
+              style={{ textAlign: "center", color: "var(--accent-text)" }}
+            >
+              {CONFIG.DISPLAY_COST1} {CONFIG.NETWORK.SYMBOL} Each
+            </s.TextTitle>
+            <s.TextDescription
+              style={{ textAlign: "center", color: "var(--accent-text)" }}
+            >
+              Limit: 1 per wallet
+            </s.TextDescription>
+            <s.TextDescription
+              style={{ textAlign: "center", color: "var(--accent-text)" }}
+            >
+              Excluding gas fees.
+            </s.TextDescription>
             <s.TextDescription
               style={{
                 textAlign: "center",
@@ -329,12 +372,12 @@ function App() {
               </StyledButton> */}
             </span>
             <s.SpacerSmall />
-            {Number(data.minted0) >= CONFIG.MAX_SUPPLY ? (
+            {minted >= CONFIG.MAX_SUPPLY1 ? (
               <>
                 <s.TextTitle
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
-                  The sale has ended.
+                  Minting is over.
                 </s.TextTitle>
                 <s.TextDescription
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
@@ -349,8 +392,9 @@ function App() {
             ) : (
               <>
                 <s.SpacerSmall />
-                {blockchain.account === "" ||
-                blockchain.smartContract === null ? (
+                {minted < 600 &&
+                (blockchain.account === "" ||
+                  blockchain.smartContract === null) ? (
                   <s.Container ai={"center"} jc={"center"}>
                     <s.TextDescription
                       style={{
@@ -358,7 +402,8 @@ function App() {
                         color: "var(--accent-text)",
                       }}
                     >
-                      Connect to {CONFIG.NETWORK.NAME} for Minted Supply and<br/> obtain The Sentinel
+                      Connect to {CONFIG.NETWORK.NAME} for Minted Supply and
+                      <br /> obtain The Sentinel
                     </s.TextDescription>
                     <s.SpacerSmall />
                     <StyledButton
@@ -426,7 +471,7 @@ function App() {
                         +
                       </StyledRoundButton>
                     </s.Container> */}
-                    
+
                     <s.Container ai={"center"} jc={"center"} fd={"row"}>
                       <StyledButton
                         disabled={claimingNft ? 1 : 0}
@@ -445,7 +490,6 @@ function App() {
             )}
             <s.SpacerMedium />
           </s.Container>
-         
         </ResponsiveWrapper>
         <s.SpacerLarge />
         <s.SpacerLarge />
